@@ -2,6 +2,9 @@
 
 ### To Run
 
+1. Download Python at [https://www.python.org/downloads/](https://www.python.org/downloads/)
+
+2. Run the following lines of code
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
