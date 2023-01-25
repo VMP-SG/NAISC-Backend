@@ -10,6 +10,10 @@ CORS(app)
 def health_check():
   return "Health Check!"
 
+@app.route("/hello")
+def hello():
+  return "Hello!"
+
 @app.route("/test")
 def stream():
   if request.headers.get('accept') == 'text/event-stream':
