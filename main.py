@@ -25,9 +25,8 @@ def stream():
         time.sleep(.1)  # an artificial delay
     return Response(events(), content_type='text/event-stream')
 
-@app.route("/video")
 def video_gen():
-  cap = cv.VideoCapture('GoldenMile_1.mp4')
+  cap = cv.VideoCapture('videos/GoldenMile/GoldenMile_1.mp4')
   if not cap.isOpened():
     print("Cannot open camera")
     exit()
@@ -35,18 +34,22 @@ def video_gen():
     # Capture frame-by-frame
     ret, frame = cap.read()
     # if frame is read correctly ret is True
-    if not ret:
-      print("Can't receive frame (stream end?). Exiting ...")
-      break
+    if ret:
+        cv.imshow("Image", frame)
+    else:
+       print('no video')
+       cap.set(cv.CAP_PROP_POS_FRAMES, 0)
+       continue
     # Our operations on the frame come here
-    gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+    # gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
     # Display the resulting frame
-    cv.imshow('frame', gray)
+    # cv.imshow('frame', frame)
     if cv.waitKey(1) == ord('q'):
       break
   # releasing the capture
   cap.release()
   cv.destroyAllWindows()
+@app.route("/video")
 def video_feed():
   return Response(video_gen(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
