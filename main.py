@@ -27,30 +27,17 @@ def stream():
 
 def video_gen():
   cap = cv.VideoCapture('videos/GoldenMile/GoldenMile_1.mp4')
-  if not cap.isOpened():
-    print("Cannot open camera")
-    exit()
   while True:
-    # Capture frame-by-frame
-    ret, frame = cap.read()
-    cv.namedWindow("window", cv.WND_PROP_FULLSCREEN)
-    cv.setWindowProperty("window",cv.WND_PROP_FULLSCREEN,cv.WINDOW_FULLSCREEN)
-    # if frame is read correctly ret is True
-    if ret:
-        cv.imshow("window", frame)
+    success, frame = cap.read()  # read the camera frame
+    if not success:
+      cap.set(cv.CAP_PROP_POS_FRAMES, 0)
+      continue
     else:
-        cap.set(cv.CAP_PROP_POS_FRAMES, 0)
-        continue
-    # Our operations on the frame come here
-    # gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-    # Display the resulting frame
-    # cv.imshow('frame', frame)
-    if cv.waitKey(1) == ord('q'):
-      break
-  # releasing the capture
-  cap.release()
-  cv.destroyAllWindows()
-  
+      ret, buffer = cv.imencode('.jpg', frame)
+      frame = buffer.tobytes()
+      yield (b'--frame\r\n'
+              b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
+
 @app.route("/video")
 def video_feed():
   return Response(video_gen(), mimetype='multipart/x-mixed-replace; boundary=frame')
