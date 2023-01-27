@@ -33,13 +33,14 @@ def video_gen():
   while True:
     # Capture frame-by-frame
     ret, frame = cap.read()
+    cv.namedWindow("window", cv.WND_PROP_FULLSCREEN)
+    cv.setWindowProperty("window",cv.WND_PROP_FULLSCREEN,cv.WINDOW_FULLSCREEN)
     # if frame is read correctly ret is True
     if ret:
-        cv.imshow("Image", frame)
+        cv.imshow("window", frame)
     else:
-       print('no video')
-       cap.set(cv.CAP_PROP_POS_FRAMES, 0)
-       continue
+        cap.set(cv.CAP_PROP_POS_FRAMES, 0)
+        continue
     # Our operations on the frame come here
     # gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
     # Display the resulting frame
@@ -49,6 +50,7 @@ def video_gen():
   # releasing the capture
   cap.release()
   cv.destroyAllWindows()
+  
 @app.route("/video")
 def video_feed():
   return Response(video_gen(), mimetype='multipart/x-mixed-replace; boundary=frame')
