@@ -18,14 +18,14 @@ def health_check():
 def hello():
   return "Hello!"
 
-@app.route("/test")
-def stream():
-  if request.headers.get('accept') == 'text/event-stream':
-    def events():
-      for i, c in enumerate(itertools.cycle('\|/-')):
-        yield "data: %s %d\n\n" % (c, i)
-        time.sleep(.1)  # an artificial delay
-    return Response(events(), content_type='text/event-stream')
+# @app.route("/test")
+# def stream():
+#   if request.headers.get('accept') == 'text/event-stream':
+#     def events():
+#       for i, c in enumerate(itertools.cycle('\|/-')):
+#         yield "data: %s %d\n\n" % (c, i)
+#         time.sleep(.1)  # an artificial delay
+#     return Response(events(), content_type='text/event-stream')
 
 def video_gen(clip):
   cap = cv2.VideoCapture('videos/' + clip + '.mp4')
@@ -44,10 +44,13 @@ def video_gen(clip):
 def video_feed(clip):
   return Response(video_gen(clip), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route("/count/zone")
-def zone_stream():
-  if request.headers.get('accept') == 'text/event-stream':
-    return Response(count_human_gen(str(Path.cwd() / "videos" / "GoldenMile" / "GoldenMile_1.mp4")), content_type='text/event-stream')
+@app.route("/count/zone/<path:clip>")
+def zone_stream(clip):
+  # TODO: uncomment this later
+  # if request.headers.get('accept') == 'text/event-stream':
+    if not clip.endswith('.mp4'):
+      clip += '.mp4'
+    return Response(count_human_gen(str(Path.cwd() / "videos" / clip)), content_type='text/event-stream')
 
 if __name__ == "__main__":
   app.run(host='0.0.0.0', port=3000)
