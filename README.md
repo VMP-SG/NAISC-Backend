@@ -7,7 +7,7 @@
 ### For Linux
 2. Run the following lines of code
 ```bash
-sudo apt-get install ffmpeg libsm6 libxext6  -y
+sudo apt-get install ffmpeg libsm6 libxext6 libgeos-dev -y
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
