@@ -4,6 +4,7 @@
 
 1. Download Python at [https://www.python.org/downloads/](https://www.python.org/downloads/)
 
+### For MacOS and Linux
 2. Run the following lines of code
 ```bash
 python3 -m venv .venv
@@ -11,13 +12,23 @@ source .venv/bin/activate
 pip install -r requirements.txt
 python3 main.py
 ```
+
+### For Windows
+2. Run the following lines of code 
+```bash
+python -m venv .venv
+.venv/Scripts/activate
+pip install -r requirements.txt
+python main.py
+```
+
 The server will be hosted at [http://127.0.0.1:5000](http://127.0.0.1:5000) by default.
 
 ## Deployment on AWS EC2
 
 1. Create a systemd unit file
 ```sh
-sudo nano /etc/systemd/system/helloworld.service
+sudo nano /etc/systemd/system/hawk-eye.service
 ```
 
 2. Add this into the file
@@ -39,8 +50,8 @@ WantedBy=multi-user.target
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl start helloworld
-sudo systemctl enable helloworld
+sudo systemctl start hawk-eye
+sudo systemctl enable hawk-eye
 ```
 
 4. Check that the service is running
@@ -53,6 +64,6 @@ curl localhost:8080
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl stop helloworld
-sudo systemctl disable helloworld
+sudo systemctl stop hawk-eye
+sudo systemctl disable hawk-eye
 ```

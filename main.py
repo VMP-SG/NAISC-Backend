@@ -50,4 +50,4 @@ def zone_stream():
     return Response(count_human_gen(str(Path.cwd() / "videos" / "GoldenMile" / "GoldenMile_1.mp4")), content_type='text/event-stream')
 
 if __name__ == "__main__":
-  app.run(host='0.0.0.0', port=8080)
+  app.run(host='0.0.0.0', port=3000)
