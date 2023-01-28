@@ -4,7 +4,17 @@
 
 1. Download Python at [https://www.python.org/downloads/](https://www.python.org/downloads/)
 
-### For MacOS and Linux
+### For Linux
+2. Run the following lines of code
+```bash
+sudo apt-get install ffmpeg libsm6 libxext6  -y
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python3 main.py
+```
+
+### For MacOS
 2. Run the following lines of code
 ```bash
 python3 -m venv .venv

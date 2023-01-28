@@ -3,7 +3,4 @@ gunicorn
 Flask-Cors
 opencv-python
 numpy
-<<<<<<< HEAD
 peekingduck
-=======
->>>>>>> main
