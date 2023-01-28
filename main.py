@@ -5,7 +5,6 @@ from pathlib import Path
 
 import time
 import itertools
-import numpy as np
 import cv2
 app = Flask(__name__)
 CORS(app)

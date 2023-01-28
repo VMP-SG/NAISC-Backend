@@ -1,0 +1,25 @@
+FROM ubuntu:18.04
+
+WORKDIR /naisc-backend
+
+RUN apt-get update && apt-get install -y \
+  libgeos-dev \
+  ffmpeg \
+  libsm6 \
+  libxext6
+
+RUN apt install -y python3.8 python3-pip python3-venv
+
+RUN python3 -m venv .venv && . ./.venv/bin/activate
+
+COPY requirements.txt requirements.txt
+RUN pip install -U peekingduck
+RUN pip install -r requirements.txt
+
+RUN apt-get remove -y --purge make gcc build-essential \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY . .
+
+CMD [ "python3", "main.py"]

@@ -2,5 +2,3 @@ Flask
 gunicorn
 Flask-Cors
 opencv-python
-numpy
-peekingduck
