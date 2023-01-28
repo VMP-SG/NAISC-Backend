@@ -25,8 +25,8 @@ def stream():
         time.sleep(.1)  # an artificial delay
     return Response(events(), content_type='text/event-stream')
 
-def video_gen():
-  cap = cv.VideoCapture('videos/GoldenMile/GoldenMile_1.mp4')
+def video_gen(clip):
+  cap = cv.VideoCapture('videos/' + clip + '.mp4')
   while True:
     success, frame = cap.read()  # read the camera frame
     if not success:
@@ -38,9 +38,9 @@ def video_gen():
       yield (b'--frame\r\n'
               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
 
-@app.route("/video")
-def video_feed():
-  return Response(video_gen(), mimetype='multipart/x-mixed-replace; boundary=frame')
+@app.route("/video/<path:clip>")
+def video_feed(clip):
+  return Response(video_gen(clip), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == "__main__":
   app.run(host='0.0.0.0', port=3000)
