@@ -39,11 +39,11 @@ def video_gen(clip):
       yield (b'--frame\r\n'
               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
 
-@app.route("/video/<path:clip>")
+@app.route("/video/<path:clip>") # /video/GoldenMile/A
 def video_feed(clip):
   return Response(video_gen(clip), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route("/count/zone/<path:clip>")
+@app.route("/count/zone/<path:clip>") # /count/zone/GoldenMile/A
 def zone_stream(clip):
   # TODO: uncomment this later
   # if request.headers.get('accept') == 'text/event-stream':

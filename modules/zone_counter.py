@@ -46,7 +46,7 @@ def count_human_gen(path_to_file):
     #                         "filename":visual_output["filename"],
     #                         "saved_video_fps":visual_output["saved_video_fps"],
     #                         "pipeline_end":visual_output["pipeline_end"]})
-    yield "data: %s\n\n" % (bbox_count_output["count"])
+    yield "data: %s\n\n" % (bbox_count_output)
 
 if __name__ == "__main__":
   generator = count_human_gen(str(Path.cwd() / "videos" / "GoldenMile" / "GoldenMile_1.mp4"))
