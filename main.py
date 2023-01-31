@@ -1,21 +1,49 @@
 from flask import Flask, Response, request
 from flask_cors import CORS
-from modules.zone_counter import count_human_gen
-from pathlib import Path
+from threading import Thread
+from API import *
+from time import sleep
+from modules.table_occupancy_check import *
+from modules.queue_count import *
 
-import time
-import itertools
 import cv2
 app = Flask(__name__)
 CORS(app)
+
+# Define global variables
+result = None
+records = []
+API = None  # Generator
+API_active = False
+
 
 @app.route("/")
 def health_check():
   return "Health Check!"
 
-@app.route("/hello")
-def hello():
-  return "Hello!"
+
+@app.route("/startAPI")
+def create_API_thread():
+
+  def start_API():
+    global API, API_active, result, records
+    API_active = True
+    API = run_API()
+    while API_active:
+      result = next(API)
+      records.append(result)
+
+  API_thread = Thread(target=start_API)
+  API_thread.start()
+  sleep(5)
+  return "API started!"
+
+
+@app.route("/stopAPI")
+def stop_API_thread():  # Stops API but not the data stream. i.e. result variable is no longer updated
+  global API_active
+  API_active = False
+  return "API stopped"
 
 # @app.route("/test")
 # def stream():
@@ -26,30 +54,58 @@ def hello():
 #         time.sleep(.1)  # an artificial delay
 #     return Response(events(), content_type='text/event-stream')
 
-def video_gen(clip):
-  cap = cv2.VideoCapture('videos/' + clip + '.mp4')
+
+def video_gen(camera_id):
+  global result
   while True:
-    success, frame = cap.read()  # read the camera frame
-    if not success:
-      cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-      continue
-    else:
-      ret, buffer = cv2.imencode('.jpg', frame)
-      frame = buffer.tobytes()
-      yield (b'--frame\r\n'
-              b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
+    ret, buffer = cv2.imencode('.jpg', result[camera_id]["labelled_frame"])
+    yield (b'--frame\r\n'
+           b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')  # concat frame one by one and show result
 
-@app.route("/video/<path:clip>") # /video/GoldenMile/A
-def video_feed(clip):
-  return Response(video_gen(clip), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route("/count/zone/<path:clip>") # /count/zone/GoldenMile/A
-def zone_stream(clip):
+def data_gen(camera_id):
+  global result
+  while True:
+    sleep(0.5)
+    yield "data: %s\n\n" % (result[camera_id]["zone_people_count"])
+
+
+def table_occupancy_gen():
+  global records
+  while True:
+    sleep(0.5)
+    # Uses the latest 10 records to determine table status
+    yield "occupancy: %s\n\n" % (str(is_table_occupied(records[-10:])))
+
+
+def queue_count_gen():
+  global result
+  while True:
+    sleep(0.5)
+    yield "queue: %s\n\n" % (str(queue_count(result)))
+
+
+@app.route("/video/<path:camera_id>")  # /video/A
+def video_feed(camera_id):
+  return Response(video_gen(camera_id), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+@app.route("/count/zone/<path:camera_id>")  # /count/zone/A
+def zone_stream(camera_id):
   # TODO: uncomment this later
   # if request.headers.get('accept') == 'text/event-stream':
-    if not clip.endswith('.mp4'):
-      clip += '.mp4'
-    return Response(count_human_gen(str(Path.cwd() / "videos" / clip)), content_type='text/event-stream')
+    return Response(data_gen(camera_id), content_type='text/event-stream')
+
+
+@app.route("/tables")
+def table_occupancy():
+  return Response(table_occupancy_gen(), content_type='text/event-stream')
+
+
+@app.route("/queues")
+def store_queue_count():
+  return Response(queue_count_gen(), content_type='text/event-stream')
+
 
 if __name__ == "__main__":
   app.run(host='0.0.0.0', port=3000)
