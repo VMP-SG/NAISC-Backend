@@ -34,6 +34,7 @@ def create_API_thread():
     while API_active:
       result = next(API)
       records.append(result)
+      records = records[-10:]
 
   API_thread = Thread(target=start_API)
   API_thread.start()
@@ -82,14 +83,14 @@ def table_occupancy_gen():
   while True:
     sleep(0.5)
     # Uses the latest 10 records to determine table status
-    yield "data: %s\n\n" % (json.dumps(is_table_occupied(records[-10:])))
+    yield "data: %s\n\n" % (json.dumps(is_table_occupied(records)))
 
 def tables_people_gen():
   global records
   while True:
     sleep(0.5)
     # Uses the latest 10 records to determine table count
-    yield "data: %s\n\n" % (json.dumps(table_people_count(records[-10:])))
+    yield "data: %s\n\n" % (json.dumps(table_people_count(records)))
 
 def table_people_gen():
   global records
