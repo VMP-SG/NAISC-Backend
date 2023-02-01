@@ -19,7 +19,7 @@ API_active = False
 
 @app.route("/")
 def health_check():
-  return "Health Check!"
+  return "500 Internal Server Error"
 
 
 @app.route("/startAPI")
@@ -35,7 +35,7 @@ def create_API_thread():
 
   API_thread = Thread(target=start_API)
   API_thread.start()
-  sleep(5)
+  sleep(10)
   return "API started!"
 
 
@@ -87,23 +87,31 @@ def queue_count_gen():
 
 @app.route("/video/<path:camera_id>")  # /video/A
 def video_feed(camera_id):
+  if not API_active:
+    return "No video feed as API is inactive"
   return Response(video_gen(camera_id), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 @app.route("/count/zone/<path:camera_id>")  # /count/zone/A
 def zone_stream(camera_id):
+  if not API_active:
+    return "No data feed as API is inactive"
   # TODO: uncomment this later
   # if request.headers.get('accept') == 'text/event-stream':
-    return Response(data_gen(camera_id), content_type='text/event-stream')
+  return Response(data_gen(camera_id), content_type='text/event-stream')
 
 
 @app.route("/tables")
 def table_occupancy():
+  if not API_active:
+    return "No data feed as API is inactive"
   return Response(table_occupancy_gen(), content_type='text/event-stream')
 
 
 @app.route("/queues")
 def store_queue_count():
+  if not API_active:
+    return "No data feed as API is inactive"
   return Response(queue_count_gen(), content_type='text/event-stream')
 
 
