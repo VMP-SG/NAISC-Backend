@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from peekingduck.pipeline.nodes.dabble import fps, zone_count, bbox_count, bbox_to_btm_midpoint
+from peekingduck.pipeline.nodes.dabble import zone_count, bbox_count, bbox_to_btm_midpoint
 from peekingduck.pipeline.nodes.draw import bbox, legend, zones
 from peekingduck.pipeline.nodes.input import visual
 from peekingduck.pipeline.nodes.model import yolox, yolo
@@ -30,6 +30,7 @@ def count_human_gen(path_to_file, zone_split, resolution, mapping):
     # Manually run the pipeline
     while True:
         visual_output = visual_node.run({})
+        raw_frame = visual_output["img"].copy()
         if visual_output["pipeline_end"]: break  # Video has no more frames
 
         yolo_output = yolo_node.run({"img":visual_output["img"]})
@@ -51,7 +52,7 @@ def count_human_gen(path_to_file, zone_split, resolution, mapping):
         #                        "pipeline_end":visual_output["pipeline_end"]})
 
         # zone_people_count indicates the number of bboxes with bottom midpoint lying in the zone boundary
-        yield {"raw_frame":visual_output["img"],
+        yield {"raw_frame": raw_frame,
                "labelled_frame": legend_output["img"],
                "total_people_count": bbox_count_output["count"],
                "zone_people_count": zone_count_output["zone_count"],
@@ -60,15 +61,14 @@ def count_human_gen(path_to_file, zone_split, resolution, mapping):
 
 # Code for testing
 # from settings_golden_mile import *
-# generator = count_human_gen(str(Path.cwd() / "data" / "Golden Mile" / "D.mp4"), CAMERA_D_ZONES, RESOLUTION)
+# generator = count_human_gen("videos/GoldenMile/A.mp4",CAMERA_A_ZONES, RESOLUTION, CAMERA_A_MAPPING)
 # while True:
 #     try:
 #         res = next(generator)
 #         print(res["total_people_count"])
-#         print(res["zone_people_count"], res["table_occupation"], res["occupied_table_count"])
-#         # cv2.imshow("img", res["img"])
-#         # cv2.waitKey(0)
-#         # break
+#         cv2.imshow("img", res["raw_frame"])
+#         cv2.waitKey(0)
+#         break
 #     except Exception as e:
 #         print(e)
 #         print("End of Processing")
