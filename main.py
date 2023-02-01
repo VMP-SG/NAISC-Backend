@@ -55,10 +55,10 @@ def stop_API_thread():  # Stops API but not the data stream. i.e. result variabl
 #     return Response(events(), content_type='text/event-stream')
 
 
-def video_gen(camera_id):
+def video_gen(camera_id, key):
   global result
   while True:
-    ret, buffer = cv2.imencode('.jpg', result[camera_id]["labelled_frame"])
+    ret, buffer = cv2.imencode('.jpg', result[camera_id][key])
     yield (b'--frame\r\n'
            b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')  # concat frame one by one and show result
 
@@ -75,22 +75,27 @@ def table_occupancy_gen():
   while True:
     sleep(0.5)
     # Uses the latest 10 records to determine table status
-    yield "occupancy: %s\n\n" % (str(is_table_occupied(records[-10:])))
+    yield "data: %s\n\n" % (str(is_table_occupied(records[-10:])))
 
 
 def queue_count_gen():
   global result
   while True:
     sleep(0.5)
-    yield "queue: %s\n\n" % (str(queue_count(result)))
+    yield "data: %s\n\n" % (str(queue_count(result)))
 
 
-@app.route("/video/<path:camera_id>")  # /video/A
-def video_feed(camera_id):
+@app.route("/video/filter/<path:camera_id>")  # /video/A
+def video_filter_feed(camera_id):
   if not API_active:
     return "No video feed as API is inactive"
-  return Response(video_gen(camera_id), mimetype='multipart/x-mixed-replace; boundary=frame')
+  return Response(video_gen(camera_id, "labelled_frame"), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+@app.route("/video/raw/<path:camera_id>")
+def video_raw_feed(camera_id):
+  if not API_active:
+    return "No video feed as API is inactive"
+  return Response(video_gen(camera_id, "raw_frame"), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route("/count/zone/<path:camera_id>")  # /count/zone/A
 def zone_stream(camera_id):
