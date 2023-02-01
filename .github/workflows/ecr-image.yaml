@@ -53,11 +53,10 @@ jobs:
           REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
           REGISTRY_ALIAS: l8y5v2o2
           REPOSITORY: naisc-backend
-          IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG .
-          docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
-          echo "image=$REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:latest .
+          docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:latest
+          echo "image=$REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:latest >> $GITHUB_OUTPUT
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def

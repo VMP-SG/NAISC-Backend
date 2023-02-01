@@ -5,6 +5,8 @@ from API import *
 from time import sleep
 from modules.table_occupancy_check import *
 from modules.queue_count import *
+from modules.table_people_count import *
+import json
 
 import cv2
 app = Flask(__name__)
@@ -62,8 +64,13 @@ def video_gen(camera_id, key):
     yield (b'--frame\r\n'
            b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')  # concat frame one by one and show result
 
+def count_gen():
+  global result
+  while True:
+    sleep(0.5)
+    yield "data: %s\n\n" % (json.dumps({key:result[key]["total_people_count"] for key in result}))
 
-def data_gen(camera_id):
+def zone_count_gen(camera_id):
   global result
   while True:
     sleep(0.5)
@@ -75,43 +82,80 @@ def table_occupancy_gen():
   while True:
     sleep(0.5)
     # Uses the latest 10 records to determine table status
-    yield "data: %s\n\n" % (str(is_table_occupied(records[-10:])))
+    yield "data: %s\n\n" % (json.dumps(is_table_occupied(records[-10:])))
 
+def tables_people_gen():
+  global records
+  while True:
+    sleep(0.5)
+    # Uses the latest 10 records to determine table count
+    yield "data: %s\n\n" % (json.dumps(table_people_count(records[-10:])))
+
+def table_people_gen():
+  global records
+  while True:
+    sleep(0.5)
 
 def queue_count_gen():
   global result
   while True:
     sleep(0.5)
-    yield "data: %s\n\n" % (str(queue_count(result)))
+    yield "data: %s\n\n" % (json.dumps(queue_count(result)))
 
+def data_gen():
+  global result
+  if result:
+    response = result.copy()
+    while True:
+      sleep(0.5)
+      for key in response:
+        response[key]['labelled_frame'] = response[key]['labelled_frame'].tolist()
+        response[key]['raw_frame'] = response[key]['raw_frame'].tolist()
+      yield "data: %s\n\n" % (json.dumps(response))
 
-@app.route("/video/filter/<path:camera_id>")  # /video/A
+@app.route("/video/filter/<camera_id>")  # /video/A
 def video_filter_feed(camera_id):
   if not API_active:
     return "No video feed as API is inactive"
   return Response(video_gen(camera_id, "labelled_frame"), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route("/video/raw/<path:camera_id>")
+@app.route("/video/raw/<camera_id>")
 def video_raw_feed(camera_id):
   if not API_active:
     return "No video feed as API is inactive"
   return Response(video_gen(camera_id, "raw_frame"), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route("/count/zone/<path:camera_id>")  # /count/zone/A
+@app.route("/count/zone/<camera_id>")  # /count/zone/A
 def zone_stream(camera_id):
   if not API_active:
     return "No data feed as API is inactive"
   # TODO: uncomment this later
   # if request.headers.get('accept') == 'text/event-stream':
-  return Response(data_gen(camera_id), content_type='text/event-stream')
+  return Response(zone_count_gen(camera_id), content_type='text/event-stream')
 
+@app.route("/count/zones")
+def count_stream():
+  if not API_active:
+    return "No data feed as API is inactive"
+  return Response(count_gen(), content_type='text/event-stream')
 
-@app.route("/tables")
+@app.route("/count/table/<table_id>")
+def count_table_stream():
+  if not API_active:
+    return "No data feed as API is inactive"
+  return Response(table_people_gen(), content_type='text/event-stream')
+
+@app.route("/count/tables")
+def count_tables_stream():
+  if not API_active:
+    return "No data feed as API is inactive"
+  return Response(tables_people_gen(), content_type='text/event-stream')
+
+@app.route("/occupancy/tables")
 def table_occupancy():
   if not API_active:
     return "No data feed as API is inactive"
   return Response(table_occupancy_gen(), content_type='text/event-stream')
-
 
 @app.route("/queues")
 def store_queue_count():
@@ -119,6 +163,11 @@ def store_queue_count():
     return "No data feed as API is inactive"
   return Response(queue_count_gen(), content_type='text/event-stream')
 
+@app.route("/api")
+def data():
+  if not API_active:
+    return "No data feed as API is inactive"
+  return Response(data_gen(), content_type='text/event-stream')
 
 if __name__ == "__main__":
   app.run(host='0.0.0.0', port=3000)
