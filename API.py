@@ -26,6 +26,8 @@ def run_API():
     while True:
         yield {camera_id:next(generators[camera_id]) for camera_id in CAMERA_IDS}
 
-# API = run_API()
-# for _ in range(100):
-#     next(API)
+if __name__ == "__main__":
+    
+    API = run_API()
+    for _ in range(100):
+        next(API)
