@@ -30,8 +30,11 @@ def count_human_gen(path_to_file, zone_split, resolution, mapping):
     # Manually run the pipeline
     while True:
         visual_output = visual_node.run({})
+        # Video has no more frames
+        if visual_output["pipeline_end"]:
+            visual_node = visual.Node(source=path_to_file)
+            visual_output = visual_node.run({})
         raw_frame = visual_output["img"].copy()
-        if visual_output["pipeline_end"]: break  # Video has no more frames
 
         yolo_output = yolo_node.run({"img":visual_output["img"]})
         bbox_count_output = bbox_count_node.run({"bboxes": yolo_output["bboxes"]})
