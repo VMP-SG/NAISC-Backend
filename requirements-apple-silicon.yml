@@ -152,6 +152,7 @@ dependencies:
     - torch==1.13.1
     - torchvision==0.14.1
     - typing-extensions==4.4.0
+    - waitress==2.1.2
     - werkzeug==2.2.2
     - wrapt==1.14.1
     - zipp==3.11.0

@@ -172,4 +172,4 @@ def data():
   return Response(data_gen(), content_type='text/event-stream')
 
 if __name__ == "__main__":
-  serve(app, host='0.0.0.0', post=3000)
+  serve(app, host='0.0.0.0', port=3000)
