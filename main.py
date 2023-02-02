@@ -40,6 +40,7 @@ def create_API_thread():
   API_thread = Thread(target=start_API)
   API_thread.start()
   sleep(10)
+  print("API started!")
   return "API started!"
 
 
@@ -47,6 +48,7 @@ def create_API_thread():
 def stop_API_thread():  # Stops API but not the data stream. i.e. result variable is no longer updated
   global API_active
   API_active = False
+  print("API stopped")
   return "API stopped"
 
 # @app.route("/test")
