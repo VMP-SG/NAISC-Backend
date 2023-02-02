@@ -15,7 +15,7 @@ on:
       - main
 
 env:
-  AWS_REGION: us-east-1                  # set this to your preferred AWS region, e.g. us-west-1
+  AWS_REGION: ap-southeast-1                  # set this to your preferred AWS region, e.g. us-west-1
 #   ECR_REPOSITORY: naisc-backend           # set this to your Amazon ECR repository name
   ECS_SERVICE: HuixxService                 # set this to your Amazon ECS service name
   ECS_CLUSTER: HuixxCluster                 # set this to your Amazon ECS cluster name
@@ -44,6 +44,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
         with:
           registry-type: public
+          aws-region: us-east-1
 
       - name: Build, tag, and push docker image to Amazon ECR Public
         id: build-image
@@ -59,7 +60,7 @@ jobs:
 
       - name: Download task definition
         run: |
-          aws ecs describe-task-definition --task-definition naisc-task --query taskDefinition --region ap-southeast-1 > task-definition.json
+          aws ecs describe-task-definition --task-definition naisc-task --query taskDefinition > task-definition.json
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
