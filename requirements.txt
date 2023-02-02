@@ -1,5 +1,5 @@
 peekingduck
 Flask
-gunicorn
+waitress
 Flask-Cors
 opencv-python

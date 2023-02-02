@@ -6,6 +6,7 @@ from time import sleep
 from modules.table_occupancy_check import *
 from modules.queue_count import *
 from modules.table_people_count import *
+from waitress import serve
 import json
 
 import cv2
@@ -171,4 +172,4 @@ def data():
   return Response(data_gen(), content_type='text/event-stream')
 
 if __name__ == "__main__":
-  app.run(host='0.0.0.0', port=3000)
+  serve(app, host='0.0.0.0', post=3000)
