@@ -9,7 +9,7 @@ from peekingduck.pipeline.nodes.output import media_writer, screen
 
 def count_human_gen(path_to_file, zone_split, resolution, mapping):
     # input
-    visual_node = visual.Node(source=path_to_file)
+    visual_node = visual.Node(source=path_to_file, resize={"do_resizing": True, "width": resolution[0], "height": resolution[1]})
 
     # Model
     yolo_node = yolo.Node(detect=["person"])

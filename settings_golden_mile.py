@@ -1,8 +1,8 @@
 """
 Video Settings
 """
-RESOLUTION = [1920, 1080]
-FPS = 15  # Reduce FPS to reduce live stream lag
+RESOLUTION = [1080, 720]
+# FPS = 15  # Reduce FPS to reduce live stream lag
 
 """
 Zone Settings
