@@ -1,7 +1,8 @@
 """
 Video Settings
 """
-RESOLUTION = [1080, 720]
+ORIGINAL_RESOLUTION = [1920, 1080]
+RESOLUTION = [1080, 720]  # Downsize to reduce memory load
 # FPS = 15  # Reduce FPS to reduce live stream lag
 
 """
@@ -9,7 +10,7 @@ Zone Settings
 zone is a list of bounding boxes
 Each bounding box is a list of four [x,y] coords, corresponding to the 4 corners of box
 May use relative coords (between 0 and 1) or absolute coords
-If using relative coords, need to specify the resolution of input
+For absolute coords, it must be based on the original resolution
 """
 ALL_IN_ONE = [[[0, 0], [0, 1], [1, 1], [1, 0]]]
 VERTICAL_SPLIT = [
