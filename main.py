@@ -2,7 +2,7 @@ from flask import Flask, Response, request
 from flask_cors import CORS
 from threading import Thread
 from API import *
-from time import sleep
+from time import sleep, time
 from modules.table_occupancy_check import *
 from modules.queue_count import *
 from modules.table_people_count import *
@@ -30,12 +30,15 @@ def create_API_thread():
 
   def start_API():
     global API, API_active, result, records
+    start_time = time()
     API_active = True
     API = run_API()
     while API_active:
       result = next(API)
       records.append(result)
       records = records[-10:]
+      if time()-start_time > 600:  # 10 min idle timer
+        API_active = False
 
   API_thread = Thread(target=start_API)
   API_thread.start()
