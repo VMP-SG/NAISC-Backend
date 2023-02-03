@@ -31,7 +31,7 @@ def adjust_zone_split(original_res, new_res, zones):  # Adjust zone split if res
         for box in zone:
             new_box = []
             for x,y in box:
-                new_box.append([x*ratio_w, y*ratio_h])
+                new_box.append([int(x*ratio_w), int(y*ratio_h)])
             new_zone.append(new_box)
         adjusted_zones[camera_id] = new_zone
     return adjusted_zones
