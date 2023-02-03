@@ -18,8 +18,7 @@ env:
   AWS_REGION: ap-southeast-1
   AWS_REGION_PUBLIC: us-east-1                  # set this to your preferred AWS region, e.g. us-west-1
   AWS_REGION_PRIVATE: ap-southeast-1            # set this to your preferred AWS region, e.g. us-west-1
-#   ECR_REPOSITORY: naisc-backend           # set this to your Amazon ECR repository name
-  ECS_SERVICE: HuixxService                 # set this to your Amazon ECS service name
+  ECS_SERVICE: NaiscService                 # set this to your Amazon ECS service name
   ECS_CLUSTER: HuixxCluster                 # set this to your Amazon ECS cluster name
   CONTAINER_NAME: naisc-backend           # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
