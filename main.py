@@ -98,16 +98,23 @@ def tables_people_gen():
     # Uses the latest 10 records to determine table count
     yield "data: %s\n\n" % (json.dumps(table_people_count(records)))
 
-def table_people_gen():
+def table_people_gen(table_id):
   global records
   while True:
     sleep(0.5)
+    yield "data: %s\n\n" % (table_people_count(records)[table_id])
 
-def queue_count_gen():
+def queues_count_gen():
   global result
   while True:
     sleep(0.5)
     yield "data: %s\n\n" % (json.dumps(queue_count(result)))
+
+def queue_count_gen(stall_id):
+  global result
+  while True:
+    sleep(0.5)
+    yield "data: %s\n\n" % (queue_count(result)[stall_id])
 
 def data_gen():
   global result
@@ -146,11 +153,11 @@ def count_stream():
     return "No data feed as API is inactive"
   return Response(count_gen(), content_type='text/event-stream')
 
-@app.route("/count/table/<table_id>")
-def count_table_stream():
+@app.route("/count/table/<int:table_id>")
+def count_table_stream(table_id):
   if not API_active:
     return "No data feed as API is inactive"
-  return Response(table_people_gen(), content_type='text/event-stream')
+  return Response(table_people_gen(table_id), content_type='text/event-stream')
 
 @app.route("/count/tables")
 def count_tables_stream():
@@ -164,11 +171,17 @@ def table_occupancy():
     return "No data feed as API is inactive"
   return Response(table_occupancy_gen(), content_type='text/event-stream')
 
-@app.route("/queues")
-def store_queue_count():
+@app.route("/count/queue/<int:stall_id>")
+def store_queue_count(stall_id):
   if not API_active:
     return "No data feed as API is inactive"
-  return Response(queue_count_gen(), content_type='text/event-stream')
+  return Response(queue_count_gen(stall_id), content_type='text/event-stream')
+
+@app.route("/count/queues")
+def store_queues_count():
+  if not API_active:
+    return "No data feed as API is inactive"
+  return Response(queues_count_gen(), content_type='text/event-stream')
 
 @app.route("/api")
 def data():
