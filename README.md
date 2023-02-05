@@ -39,7 +39,10 @@ The server will be hosted at [http://127.0.0.1:5000](http://127.0.0.1:5000) by d
 ## 🎯 Endpoints
 
 #### `GET /api`
-
+Description:
+```
+Streams all raw and processed data from Hawk-Eye Centre
+```
 Response Content-Type:
 ```
 text/event-stream
@@ -62,6 +65,10 @@ Response (JSON):
 ```
 
 #### `GET /video/raw/<zone_id>`
+Description:
+```
+Displays raw live camera feed of specified Hawker Centre Zone
+```
 URL Parameter(s):
 
 `zone_id`: ID of the Hawker Centre Zone (eg. A)
@@ -77,6 +84,10 @@ Raw Live Camera Feed
 ```
 
 #### `GET /video/filter/<zone_id>`
+Description:
+```
+Displays live camera feed of specified Hawker Centre Zone with object detection bounding boxes
+```
 URL Parameter(s):
 
 `zone_id`: ID of the Hawker Centre Zone (eg. A)
@@ -92,7 +103,10 @@ Live Camera Feed with Bounding Boxes
 ```
 
 #### `GET /count/zones`
-
+Description:
+```
+Streams people count from all hawker centre zones
+```
 Response Content-Type:
 ```
 text/event-stream
@@ -110,6 +124,10 @@ Response:
 ```
 
 #### `GET /count/zone/<zone_id>`
+Description:
+```
+Streams people count from all specified hawker centre zone
+```
 URL Parameter(s):
 
 `zone_id`: ID of the Hawker Centre Zone (eg. A)
@@ -125,6 +143,10 @@ Response:
 ```
 
 #### `GET /count/queues`
+Description:
+```
+Streams people count from all hawker centre stall queues
+```
 
 Response Content-Type:
 ```
@@ -141,6 +163,10 @@ Response:
 ```
 
 #### `GET /count/queue/<stall_id>`
+Description:
+```
+Streams people count from specified hawker centre stall queue
+```
 URL Parameter(s):
 
 `stall_id`: ID of the Hawker Centre Stall (eg. 0)
@@ -156,6 +182,10 @@ Response:
 ```
 
 #### `GET /occupancy/tables`
+Description:
+```
+Streams occupancy status of all tables in hawker centre
+```
 Response Content-Type:
 ```
 text/event-stream
@@ -172,6 +202,10 @@ Response:
 ```
 
 #### `GET /count/tables`
+Description:
+```
+Streams people count from all hawker centre tables
+```
 Response Content-Type:
 ```
 text/event-stream
@@ -188,7 +222,12 @@ Response:
 ```
 
 #### `GET /count/table/<table_id>`
+Description:
+```
+Streams people count from specified hawker centre table
+```
 URL Parameter(s):
+
 `table_id`: ID of the Hawker Centre Table (eg. 140)
 
 Response Content-Type:
