@@ -1,4 +1,4 @@
-from flask import Flask, Response, abort, redirect
+from flask import Flask, Response, abort, redirect, request
 from flask_cors import CORS
 from waitress import serve
 from flask_swagger_ui import get_swaggerui_blueprint
@@ -39,7 +39,8 @@ API_active = False
 
 @app.route("/")
 def swagger():
-  return redirect('/swagger')
+  url = request.url
+  return redirect(url + '/swagger')
 
 @app.route("/startAPI")
 def create_API_thread():
