@@ -1,0 +1,541 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Hawk-Eye Centre",
+    "description": "Hawk-Eye Centre is an **integrated data source** powered by Machine Learning capabilities. Using computer vision models and pipelines from the PeekingDuck library, Hawk-Eye Centre can process large volumes of relevant information like people, furniture and cutlery from video feeds. Interested parties may then utilise this data API to perform higher level analysis and service.\n\nSome useful links:\n- [Github Repository](https://github.com/VMP-SG/Hawk-Eye-Centre)\n- [Hawk-Eye Centre Frontend Dashboard](https://naisc.vmpsg.xyz)",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "email": "chayhuixiang@gmail.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "version": "1.0.11"
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "tags": [
+    {
+      "name": "API Operations",
+      "description": "Start/Stop API"
+    },
+    {
+      "name": "All Data",
+      "description": "All Data from Hawk-Eye Centre"
+    },
+    {
+      "name": "Feed",
+      "description": "Live Feed from Hawker Centre"
+    },
+    {
+      "name": "Zone",
+      "description": "Hawker Centre Zones Status"
+    },
+    {
+      "name": "Queue",
+      "description": "Hawker Centre Stall Queues Status"
+    },
+    {
+      "name": "Table",
+      "description": "Hawker Centre Tables Status"
+    }
+  ],
+  "paths": {
+    "/startAPI": {
+      "get": {
+        "tags": [
+          "API Operations"
+        ],
+        "summary": "Starts API",
+        "description": "Starts API",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "API started!"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stopAPI": {
+      "get": {
+        "tags": [
+          "API Operations"
+        ],
+        "summary": "Stops API",
+        "description": "Stops API",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "API stopped!"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api": {
+      "get": {
+        "tags": [
+          "All Data"
+        ],
+        "summary": "Streams all raw and processed data from Hawk-Eye Centre",
+        "description": "Streams all raw and processed data from Hawk-Eye Centre",
+        "responses": {
+          "200": {
+            "description": "Successsful operation",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/Data"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/video/raw/{zone_id}": {
+      "get": {
+        "tags": [
+          "Feed"
+        ],
+        "summary": "Displays raw live camera feed of specified Hawker Centre Zone",
+        "description": "Displays raw live camera feed of specified Hawker Centre Zone",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "zone_id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of the Hawker Centre Zone",
+            "example": "A"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "multipart/x-mixed-replace": {
+                "schema": {
+                  "type": "string",
+                  "format": "byte"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No data feed as API is inactive"
+          }
+        }
+      }
+    },
+    "/video/filter/{zone_id}": {
+      "get": {
+        "tags": [
+          "Feed"
+        ],
+        "summary": "Displays live camera feed of specified Hawker Centre Zone with object detection bounding boxes",
+        "description": "Displays live camera feed of specified Hawker Centre Zone with object detection bounding boxes Centre Zone",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "zone_id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of the Hawker Centre Zone",
+            "example": "A"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "multipart/x-mixed-replace": {
+                "schema": {
+                  "type": "string",
+                  "format": "byte"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No data feed as API is inactive"
+          }
+        }
+      }
+    },
+    "/count/zones": {
+      "get": {
+        "tags": [
+          "Zone"
+        ],
+        "summary": "Streams people count from all Hawker Centre zones",
+        "description": "Streams people count from all Hawker Centre zones",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/Zone"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No data feed as API is inactive"
+          }
+        }
+      }
+    },
+    "/count/zone/{zone_id}": {
+      "get": {
+        "tags": [
+          "Zone"
+        ],
+        "summary": "Streams people count for each table from specified Hawker Centre zone",
+        "description": "Streams people count for each table from specified Hawker Centre zone",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "zone_id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of the Hawker Centre Zone",
+            "example": "A"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "example": [
+                    3,
+                    0,
+                    1,
+                    1,
+                    2,
+                    0,
+                    2
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No data feed as API is inactive"
+          }
+        }
+      }
+    },
+    "/count/queues": {
+      "get": {
+        "tags": [
+          "Queue"
+        ],
+        "summary": "Streams people count from all Hawker Centre stall queues",
+        "description": "Streams people count from all Hawker Centre stall queues",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/Queue"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No data feed as API is inactive"
+          }
+        }
+      }
+    },
+    "/count/queue/{stall_id}": {
+      "get": {
+        "tags": [
+          "Queue"
+        ],
+        "summary": "Streams people count from all Hawker Centre stall queues",
+        "description": "Streams people count from all Hawker Centre stall queues",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "stall_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the Hawker Centre Stall",
+            "example": 0
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "integer",
+                  "example": 0
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No data feed as API is inactive"
+          }
+        }
+      }
+    },
+    "/occupancy/tables": {
+      "get": {
+        "tags": [
+          "Table"
+        ],
+        "summary": "Streams occupancy status of all tables in Hawker Centre",
+        "description": "Streams occupancy status of all tables in Hawker Centre",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "122": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "140": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "141": {
+                      "type": "boolean",
+                      "example": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No data feed as API is inactive"
+          }
+        }
+      }
+    },
+    "/count/tables": {
+      "get": {
+        "tags": [
+          "Table"
+        ],
+        "summary": "Streams people count from all Hawker Centre tables",
+        "description": "Streams people count from all Hawker Centre tables",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/Table"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No data feed as API is inactive"
+          }
+        }
+      }
+    },
+    "/count/table/{table_id}": {
+      "get": {
+        "tags": [
+          "Table"
+        ],
+        "summary": "Streams people count from specified Hawker Centre table",
+        "description": "Streams people count from specified Hawker Centre table",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "table_id",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 140,
+            "description": "ID of the Hawker Centre Table",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Data": {
+        "type": "object",
+        "properties": {
+          "A": {
+            "$ref": "#/components/schemas/ZoneData"
+          }
+        }
+      },
+      "ZoneData": {
+        "type": "object",
+        "properties": {
+          "raw_frame": {
+            "type": "string",
+            "example": "iVBORw0KGgoAAAANSUhEUgAABDgAAALQCAIAAA"
+          },
+          "labelled_frame": {
+            "type": "string",
+            "example": "iVBORw0KGgoAAAANSUhEUgAABDgAAALQCAIAAA"
+          },
+          "total_people_count": {
+            "type": "integer",
+            "example": 0
+          },
+          "zone_people_count": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "example": [
+              3,
+              0,
+              1,
+              1,
+              2,
+              0,
+              2
+            ]
+          },
+          "zone_mapping": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "example": [
+              100,
+              101,
+              102,
+              103,
+              104,
+              105,
+              0
+            ]
+          }
+        }
+      },
+      "Queue": {
+        "type": "object",
+        "properties": {
+          "0": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          },
+          "1": {
+            "type": "integer",
+            "format": "int64",
+            "example": 5
+          },
+          "2": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          }
+        }
+      },
+      "Zone": {
+        "type": "object",
+        "properties": {
+          "A": {
+            "type": "integer",
+            "example": 11
+          },
+          "B": {
+            "type": "integer",
+            "example": 7
+          },
+          "C": {
+            "type": "integer",
+            "example": 11
+          },
+          "D": {
+            "type": "integer",
+            "example": 4
+          },
+          "E": {
+            "type": "integer",
+            "example": 13
+          }
+        }
+      },
+      "Table": {
+        "type": "object",
+        "properties": {
+          "122": {
+            "type": "integer",
+            "example": 0
+          },
+          "140": {
+            "type": "integer",
+            "example": 0
+          },
+          "141": {
+            "type": "integer",
+            "example": 2
+          }
+        }
+      }
+    }
+  }
+}

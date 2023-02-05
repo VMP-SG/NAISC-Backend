@@ -1,18 +1,35 @@
-from flask import Flask, Response, request
+from flask import Flask, Response, abort, redirect
 from flask_cors import CORS
-from threading import Thread
+from waitress import serve
+from flask_swagger_ui import get_swaggerui_blueprint
+from PIL import Image
+
 from API import *
+from threading import Thread
 from time import sleep, time
 from modules.table_occupancy_check import *
 from modules.queue_count import *
 from modules.table_people_count import *
-from waitress import serve
 import json
 import copy
+import base64
+from io import BytesIO
 
 import cv2
 app = Flask(__name__)
 CORS(app)
+
+SWAGGER_URL = "/swagger"
+API_URL = "/static/swagger.json"
+SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "Hawk-Eye Centre"
+    }
+)
+app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
+
 
 # Define global variables
 result = None
@@ -20,11 +37,9 @@ records = []
 API = None  # Generator
 API_active = False
 
-
 @app.route("/")
-def health_check():
-  return "500 Internal Server Error"
-
+def swagger():
+  return redirect('/swagger')
 
 @app.route("/startAPI")
 def create_API_thread():
@@ -54,16 +69,6 @@ def stop_API_thread():  # Stops API but not the data stream. i.e. result variabl
   API_active = False
   print("API stopped")
   return "API stopped"
-
-# @app.route("/test")
-# def stream():
-#   if request.headers.get('accept') == 'text/event-stream':
-#     def events():
-#       for i, c in enumerate(itertools.cycle('\|/-')):
-#         yield "data: %s %d\n\n" % (c, i)
-#         time.sleep(.1)  # an artificial delay
-#     return Response(events(), content_type='text/event-stream')
-
 
 def video_gen(camera_id, key):
   global result
@@ -122,75 +127,85 @@ def data_gen():
   if result:
     while True:
       response = copy.deepcopy(result)
-      print(response["A"]['total_people_count'])
-      print(response["A"]['zone_people_count'])
-      print(response["A"]['zone_mapping'])
       for key in response:
-        response[key]['labelled_frame'] = response[key]['labelled_frame'].tolist()
-        response[key]['raw_frame'] = response[key]['raw_frame'].tolist()
+        labelled_img = Image.fromarray(response[key]["labelled_frame"])
+        im_file = BytesIO()
+        labelled_img.save(im_file, format="JPEG")
+        labelled_bytes = im_file.getvalue()  # im_bytes: image in binary format.
+        labelled_b64 = base64.b64encode(labelled_bytes).decode("UTF-8")
+
+        raw_img = Image.fromarray(response[key]["labelled_frame"])
+        raw_img.save(im_file, format="JPEG")
+        raw_bytes = im_file.getvalue()  # im_bytes: image in binary format.
+        raw_b64= base64.b64encode(raw_bytes).decode("UTF-8")
+
+        response[key]['labelled_frame'] = labelled_b64
+        response[key]['raw_frame'] = raw_b64
       yield "data: %s\n\n" % (json.dumps(response))
 
 @app.route("/video/filter/<camera_id>")  # /video/A
 def video_filter_feed(camera_id):
   if not API_active:
-    return "No video feed as API is inactive"
+    abort(404)
   return Response(video_gen(camera_id, "labelled_frame"), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route("/video/raw/<camera_id>")
 def video_raw_feed(camera_id):
   if not API_active:
-    return "No video feed as API is inactive"
+    abort(404)
   return Response(video_gen(camera_id, "raw_frame"), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route("/count/zone/<camera_id>")  # /count/zone/A
 def zone_stream(camera_id):
   if not API_active:
-    return "No data feed as API is inactive"
-  # TODO: uncomment this later
-  # if request.headers.get('accept') == 'text/event-stream':
+    abort(404)
   return Response(zone_count_gen(camera_id), content_type='text/event-stream')
 
 @app.route("/count/zones")
 def count_stream():
   if not API_active:
-    return "No data feed as API is inactive"
+    abort(404)
   return Response(count_gen(), content_type='text/event-stream')
 
 @app.route("/count/table/<int:table_id>")
 def count_table_stream(table_id):
   if not API_active:
-    return "No data feed as API is inactive"
+    abort(404)
   return Response(table_people_gen(table_id), content_type='text/event-stream')
 
 @app.route("/count/tables")
 def count_tables_stream():
   if not API_active:
-    return "No data feed as API is inactive"
+    abort(404)
   return Response(tables_people_gen(), content_type='text/event-stream')
 
 @app.route("/occupancy/tables")
 def table_occupancy():
   if not API_active:
-    return "No data feed as API is inactive"
+    abort(404)
   return Response(table_occupancy_gen(), content_type='text/event-stream')
 
 @app.route("/count/queue/<int:stall_id>")
 def store_queue_count(stall_id):
   if not API_active:
-    return "No data feed as API is inactive"
+    abort(404)
   return Response(queue_count_gen(stall_id), content_type='text/event-stream')
 
 @app.route("/count/queues")
 def store_queues_count():
   if not API_active:
-    return "No data feed as API is inactive"
+    abort(404)
   return Response(queues_count_gen(), content_type='text/event-stream')
 
 @app.route("/api")
 def data():
   if not API_active:
-    return "No data feed as API is inactive"
+    abort(404)
   return Response(data_gen(), content_type='text/event-stream')
+
+@app.errorhandler(404)
+def error_handler(e):
+  return "No data feed as API is inactive", 404
 
 if __name__ == "__main__":
   serve(app, host='0.0.0.0', port=3000)

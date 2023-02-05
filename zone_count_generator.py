@@ -3,9 +3,7 @@ from pathlib import Path
 from peekingduck.pipeline.nodes.dabble import zone_count, bbox_count, bbox_to_btm_midpoint
 from peekingduck.pipeline.nodes.draw import bbox, legend, zones
 from peekingduck.pipeline.nodes.input import visual
-from peekingduck.pipeline.nodes.model import yolox, yolo
-from peekingduck.pipeline.nodes.output import media_writer, screen
-
+from peekingduck.pipeline.nodes.model import yolo
 
 def count_human_gen(path_to_file, zone_split, resolution, mapping):
     # input
@@ -25,7 +23,7 @@ def count_human_gen(path_to_file, zone_split, resolution, mapping):
     legend_node = legend.Node(show=["bbox_count","zone_count"])
 
     # Output
-    media_writer_node = media_writer.Node(output_dir=str(Path.cwd() / "output"))
+    # media_writer_node = media_writer.Node(output_dir=str(Path.cwd() / "output"))
 
     # Manually run the pipeline
     while True:
