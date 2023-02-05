@@ -105,7 +105,7 @@ Live Camera Feed with Bounding Boxes
 #### `GET /count/zones`
 Description:
 ```
-Streams people count from all hawker centre zones
+Streams people count from all Hawker Centre zones
 ```
 Response Content-Type:
 ```
@@ -126,7 +126,7 @@ Response:
 #### `GET /count/zone/<zone_id>`
 Description:
 ```
-Streams people count from all specified hawker centre zone
+Streams people count from all specified Hawker Centre zone
 ```
 URL Parameter(s):
 
@@ -145,7 +145,7 @@ Response:
 #### `GET /count/queues`
 Description:
 ```
-Streams people count from all hawker centre stall queues
+Streams people count from all Hawker Centre stall queues
 ```
 
 Response Content-Type:
@@ -165,7 +165,7 @@ Response:
 #### `GET /count/queue/<stall_id>`
 Description:
 ```
-Streams people count from specified hawker centre stall queue
+Streams people count from specified Hawker Centre stall queue
 ```
 URL Parameter(s):
 
@@ -184,7 +184,7 @@ Response:
 #### `GET /occupancy/tables`
 Description:
 ```
-Streams occupancy status of all tables in hawker centre
+Streams occupancy status of all tables in Hawker Centre
 ```
 Response Content-Type:
 ```
@@ -204,7 +204,7 @@ Response:
 #### `GET /count/tables`
 Description:
 ```
-Streams people count from all hawker centre tables
+Streams people count from all Hawker Centre tables
 ```
 Response Content-Type:
 ```
@@ -224,7 +224,7 @@ Response:
 #### `GET /count/table/<table_id>`
 Description:
 ```
-Streams people count from specified hawker centre table
+Streams people count from specified Hawker Centre table
 ```
 URL Parameter(s):
 
