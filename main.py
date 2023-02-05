@@ -40,7 +40,7 @@ API_active = False
 @app.route("/")
 def swagger():
   url = request.url
-  return redirect(url + '/swagger')
+  return redirect(url + '/swagger/')
 
 @app.route("/startAPI")
 def create_API_thread():
