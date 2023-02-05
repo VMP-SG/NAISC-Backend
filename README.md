@@ -46,7 +46,7 @@ text/event-stream
 ```
 
 Response (JSON):
-```JSON
+```js
 {
   "A": {
     "raw_frame": [[[168, 181, 192], [172, 184, 195], [176, 188, 202]]],
@@ -99,7 +99,7 @@ text/event-stream
 ```
 
 Response:
-```JSON
+```js
 {
   "E": 13, 
   "D": 4, 
@@ -120,7 +120,7 @@ text/event-stream
 ```
 
 Response:
-```JSON
+```js
 [3, 0, 1, 1, 2, 0, 2]
 ```
 
@@ -132,7 +132,7 @@ text/event-stream
 ```
 
 Response:
-```JSON
+```js
 {
   "2": 1, 
   "0": 1, 
@@ -151,7 +151,7 @@ text/event-stream
 ```
 
 Response:
-```JSON
+```js
 0
 ```
 
@@ -162,7 +162,7 @@ text/event-stream
 ```
 
 Response:
-```JSON
+```js
 {
   "140": false, 
   "141": false, 
@@ -178,7 +178,7 @@ text/event-stream
 ```
 
 Response:
-```JSON
+```js
 {
   "140": 0, 
   "141": 0, 
@@ -197,6 +197,6 @@ text/event-stream
 ```
 
 Response:
-```JSON
+```js
 0
 ```
