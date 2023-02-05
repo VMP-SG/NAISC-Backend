@@ -8,6 +8,7 @@ from modules.queue_count import *
 from modules.table_people_count import *
 from waitress import serve
 import json
+import copy
 
 import cv2
 app = Flask(__name__)
@@ -119,9 +120,11 @@ def queue_count_gen(stall_id):
 def data_gen():
   global result
   if result:
-    response = result.copy()
     while True:
-      sleep(0.5)
+      response = copy.deepcopy(result)
+      print(response["A"]['total_people_count'])
+      print(response["A"]['zone_people_count'])
+      print(response["A"]['zone_mapping'])
       for key in response:
         response[key]['labelled_frame'] = response[key]['labelled_frame'].tolist()
         response[key]['raw_frame'] = response[key]['raw_frame'].tolist()
