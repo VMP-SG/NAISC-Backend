@@ -1,4 +1,4 @@
-from flask import Flask, Response, Blueprint, abort, redirect, request
+from flask import Flask, Response, abort, redirect, request
 from flask_cors import CORS
 from waitress import serve
 from flask_swagger_ui import get_swaggerui_blueprint
@@ -29,7 +29,6 @@ SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
     }
 )
 app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
-api = Blueprint('api', __name__)
 
 # Define global variables
 result = None
@@ -42,7 +41,7 @@ def swagger():
   url = request.url
   return redirect(url + 'swagger/')
 
-@api.route("/startAPI")
+@app.route("/startAPI")
 def create_API_thread():
 
   def start_API():
@@ -64,7 +63,7 @@ def create_API_thread():
   return "API started!"
 
 
-@api.route("/stopAPI")
+@app.route("/stopAPI")
 def stop_API_thread():  # Stops API but not the data stream. i.e. result variable is no longer updated
   global API_active
   API_active = False
@@ -144,61 +143,61 @@ def data_gen():
         response[key]['raw_frame'] = raw_b64
       yield "data: %s\n\n" % (json.dumps(response))
 
-@api.route("/video/filter/<camera_id>")  # /video/A
+@app.route("/video/filter/<camera_id>")  # /video/A
 def video_filter_feed(camera_id):
   if not API_active:
     abort(404)
   return Response(video_gen(camera_id, "labelled_frame"), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@api.route("/video/raw/<camera_id>")
+@app.route("/video/raw/<camera_id>")
 def video_raw_feed(camera_id):
   if not API_active:
     abort(404)
   return Response(video_gen(camera_id, "raw_frame"), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@api.route("/count/zone/<camera_id>")  # /count/zone/A
+@app.route("/count/zone/<camera_id>")  # /count/zone/A
 def zone_stream(camera_id):
   if not API_active:
     abort(404)
   return Response(zone_count_gen(camera_id), content_type='text/event-stream')
 
-@api.route("/count/zones")
+@app.route("/count/zones")
 def count_stream():
   if not API_active:
     abort(404)
   return Response(count_gen(), content_type='text/event-stream')
 
-@api.route("/count/table/<int:table_id>")
+@app.route("/count/table/<int:table_id>")
 def count_table_stream(table_id):
   if not API_active:
     abort(404)
   return Response(table_people_gen(table_id), content_type='text/event-stream')
 
-@api.route("/count/tables")
+@app.route("/count/tables")
 def count_tables_stream():
   if not API_active:
     abort(404)
   return Response(tables_people_gen(), content_type='text/event-stream')
 
-@api.route("/occupancy/tables")
+@app.route("/occupancy/tables")
 def table_occupancy():
   if not API_active:
     abort(404)
   return Response(table_occupancy_gen(), content_type='text/event-stream')
 
-@api.route("/count/queue/<int:stall_id>")
+@app.route("/count/queue/<int:stall_id>")
 def store_queue_count(stall_id):
   if not API_active:
     abort(404)
   return Response(queue_count_gen(stall_id), content_type='text/event-stream')
 
-@api.route("/count/queues")
+@app.route("/count/queues")
 def store_queues_count():
   if not API_active:
     abort(404)
   return Response(queues_count_gen(), content_type='text/event-stream')
 
-@api.route("/data")
+@app.route("/data")
 def data():
   if not API_active:
     abort(404)
@@ -207,8 +206,6 @@ def data():
 @app.errorhandler(404)
 def error_handler(e):
   return "No data feed as API is inactive", 404
-
-app.register_blueprint(api, url_prefix='/api')
 
 if __name__ == "__main__":
   serve(app, host='0.0.0.0', port=3000)
