@@ -12,7 +12,7 @@ Our integrated Hawk-Eye Centre Dashboard can be found at this [link](https://nai
 git clone https://github.com/VMP-SG/NAISC-Backend.git
 ```
 
-2. Run the containers with docker-compose
+2. Build & Run the container with Docker
 ```bash
 docker build -t hawk-eye-centre .
 docker run -p 3000:3000 hawk-eye-centre
