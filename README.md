@@ -3,42 +3,94 @@
 Hawk-Eye Centre is an **integrated data source** powered by Machine Learning capabilities. Using computer vision models and pipelines from the PeekingDuck library, Hawk-Eye Centre can process large volumes of relevant information like people, furniture and cutlery from video feeds. Interested parties may then utilise this data API to perform higher level analysis and service. 
 
 Hawk-Eye Centre's APIs can be accessed via this [link](https://naiscbackend.vmpsg.xyz).
+Our integrated Hawk-Eye Centre Dashboard can be found at this [link](https://naisc.vmpsg.xyz).
 
-## 🛠️ To Run
+## 🛠️ To Run (Docker)
 
-1. Download Python at [https://www.python.org/downloads/](https://www.python.org/downloads/)
+1. Clone the repository
+```bash
+git clone https://github.com/VMP-SG/NAISC-Backend.git
+```
+
+2. Run the containers with docker-compose
+```bash
+docker build -t hawk-eye-centre .
+docker run -p 3000:3000 hawk-eye-centre
+```
+Hawk-Eye Centre will be hosted at [http://127.0.0.1:3000](http://127.0.0.1:3000) by default.
+
+## 🛠️ To Run (Without Docker)
+
+1. Download Python (Only versions 3.6-3.9 supported) at [https://www.python.org/downloads/](https://www.python.org/downloads/)
+2. Clone the repository 
+
+```bash
+git clone https://github.com/VMP-SG/NAISC-Backend.git
+```
 
 ### For Linux
-2. Run the following lines of code
+3. Run the following lines of code
 ```bash
+cd NAISC-Backend/
 sudo apt-get install ffmpeg libsm6 libxext6 libgeos-dev -y
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 python3 main.py
+cd ../
 ```
 
 ### For MacOS
-2. Run the following lines of code
+3. Run the following lines of code
 ```bash
+cd NAISC-Backend/
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 python3 main.py
+cd ../
 ```
 
 ### For Windows
-2. Run the following lines of code 
+3. Run the following lines of code 
 ```bash
+cd NAISC-Backend/
 python -m venv .venv
 .venv/Scripts/activate
 pip install -r requirements.txt
 python main.py
+cd ../
 ```
 
-The server will be hosted at [http://127.0.0.1:3000](http://127.0.0.1:3000) by default.
-
 ## 🎯 Endpoints
+
+### `GET /startAPI`
+Description:
+```
+Starts API data streams
+```
+Response Content-Type:
+```
+text/plain
+```
+Response:
+```
+API started!
+```
+
+### `GET /stopAPI`
+Description:
+```
+Stops API data streams
+```
+Response Content-Type:
+```
+text/plain
+```
+Response:
+```
+API stopped!
+```
 
 #### `GET /api`
 Description:
