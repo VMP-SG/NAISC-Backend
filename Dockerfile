@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
   libxext6 \
   libgl1-mesa-glx
 
+RUN python -m pip install --upgrade pip
 RUN pip install -U peekingduck
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
